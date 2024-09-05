@@ -1,14 +1,14 @@
 #include <avr/io.h>
 #include <util/delay.h>
-#include "MsRf.h"
-#include "MsHuminitySensor.h"
+#include "Transmitter.h"
+#include "HuminitySensor.h"
 
 int main()
 {
     _delay_ms(10); // z tym delayem wysyla dane
 
-    MsHuminitySensor sensor;
-    MsRf rf('A'); // B dla drugiego
+    HuminitySensor sensor;
+    Transmitter rf('A'); // B dla drugiego
 
     rf.init();
     sensor.init();

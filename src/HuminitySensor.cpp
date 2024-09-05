@@ -1,10 +1,10 @@
-#include "MsHuminitySensor.h"
+#include "HuminitySensor.h"
 
-MsHuminitySensor::MsHuminitySensor()
+HuminitySensor::HuminitySensor()
 {
 }
 
-void MsHuminitySensor::init()
+void HuminitySensor::init()
 {
     // Ustawienie napięcia referencyjnego na Vcc oraz wybór kanału ADC2 (PB4)
     ADMUX = (1 << MUX1); // ADMUX ustawiony na kanał ADC2 (PB4)
@@ -13,7 +13,7 @@ void MsHuminitySensor::init()
     ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1);
 }
 
-uint16_t MsHuminitySensor::read()
+uint16_t HuminitySensor::read()
 {
     // Rozpoczęcie konwersji ADC
     ADCSRA |= (1 << ADSC);

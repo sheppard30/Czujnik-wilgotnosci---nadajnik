@@ -1,24 +1,22 @@
-#include "MsRf.h"
+#include "Transmitter.h"
 
-MsUart uart(&DDRB, &PORTB, 4);
-
-MsRf::MsRf(char identifier)
+Transmitter::Transmitter(char identifier)
 {
     this->identifier = identifier;
 }
 
-void MsRf::init()
+void Transmitter::init()
 {
     DATA_DDR |= (1 << DATA_PIN);
 }
 
 // Zmiana funkcji send, która teraz przyjmuje liczbę uint16_t zamiast stringa
-void MsRf::send(uint16_t data)
+void Transmitter::send(uint16_t data)
 {
     transmit(data);
 }
 
-void MsRf::transmit(uint16_t data)
+void Transmitter::transmit(uint16_t data)
 {
     // Sprawdzanie bitu na pozycji `bitIndex`
     uint8_t bytesToTransmit = 16;
@@ -53,7 +51,7 @@ void MsRf::transmit(uint16_t data)
     transmitBit(0);
 }
 
-void MsRf::transmitBit(uint8_t bit)
+void Transmitter::transmitBit(uint8_t bit)
 {
     if (bit == 0)
     {
@@ -67,7 +65,7 @@ void MsRf::transmitBit(uint8_t bit)
     _delay_ms(1);
 }
 
-void MsRf::transmitEncodedFirstBit(uint8_t bit)
+void Transmitter::transmitEncodedFirstBit(uint8_t bit)
 {
     if (bit == 0)
     {
@@ -79,7 +77,7 @@ void MsRf::transmitEncodedFirstBit(uint8_t bit)
     }
 }
 
-void MsRf::transmitEncodedSecondBit(uint8_t bit)
+void Transmitter::transmitEncodedSecondBit(uint8_t bit)
 {
     if (bit == 0)
     {
