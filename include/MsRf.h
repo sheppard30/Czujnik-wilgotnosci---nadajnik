@@ -5,8 +5,6 @@
 #include <MsUart.h>
 #include "MsTimer.h"
 
-#define TICK_FOR_MANCHESTER_BIT_1 1
-#define TICK_FOR_MANCHESTER_BIT_2 2
 #define DATA_PORT PORTB
 #define DATA_PIN PB3
 #define DATA_DDR DDRB
@@ -15,27 +13,15 @@
 class MsRf : public MsTimer
 {
 private:
-    enum BitState
-    {
-        HIGH,
-        LOW,
-        NODATA
-    };
-
-    uint16_t data;
-    uint8_t bitIndex;
-    BitState bitToTransmit;
-    bool transmitting;
-
-    void setBitToSend();
-    void transmitFirstBit();
-    void transmitSecondBit();
+    void transmit(uint16_t data);
+    void transmitBit(uint8_t bit);
+    void transmitEncodedFirstBit(uint8_t bit);
+    void transmitEncodedSecondBit(uint8_t bit);
 
 public:
     MsRf();
     void init();
     void send(uint16_t data);
-    void onTimerInterrupt();
 };
 
 #endif

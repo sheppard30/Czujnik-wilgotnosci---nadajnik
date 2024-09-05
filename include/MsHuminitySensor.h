@@ -4,23 +4,14 @@
 #include <avr/io.h>
 
 #define INTERVAL 10000
-
-typedef void (*ReadCallback)(uint16_t huminity);
+#define ADC_PIN PB4
 
 class MsHuminitySensor
 {
-private:
-    uint16_t time;
-    uint16_t huminity;
-
-    void init();
-    uint16_t read();
-    ReadCallback onReadCallback;
-
 public:
     MsHuminitySensor();
-    void onTimerInterrupt();
-    void onRead(ReadCallback callback);
+    void init();
+    uint16_t read();
 };
 
 #endif

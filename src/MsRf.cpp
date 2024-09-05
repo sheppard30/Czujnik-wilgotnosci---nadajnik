@@ -4,97 +4,78 @@ MsUart uart(&DDRB, &PORTB, 4);
 
 MsRf::MsRf()
 {
-    bitToTransmit = BitState::NODATA;
-    bitIndex = 0;
-    data = 0;
-    transmitting = false;
 }
 
 void MsRf::init()
 {
     DATA_DDR |= (1 << DATA_PIN);
-    MsTimer::init();
 }
 
 // Zmiana funkcji send, która teraz przyjmuje liczbę uint16_t zamiast stringa
-void MsRf::send(uint16_t number)
+void MsRf::send(uint16_t data)
 {
-    this->data = number; // Przechowuj liczbę w polu `data`
-    setBitToSend();      // Zainicjuj pierwszy zestaw bitów do transmisji
+    transmit(data);
 }
 
-void MsRf::setBitToSend()
+void MsRf::transmit(uint16_t data)
 {
     // Sprawdzanie bitu na pozycji `bitIndex`
-    uint8_t bit = ((data >> bitIndex) & 1);
+    uint8_t bytesToTransmit = 16;
 
-    if (bit == 1)
+    // Wysylanie preambuly. Musi byc int8_t
+    for (int8_t index = 7; index >= 0; index--)
     {
-        bitToTransmit = BitState::HIGH;
-    }
-    else if (bit == 0)
-    {
-        bitToTransmit = BitState::LOW;
+        uint8_t bit = ((PREAMBLE >> index) & 1);
+
+        transmitEncodedFirstBit(bit);
+        transmitEncodedSecondBit(bit);
     }
 
-    bitIndex++;
-
-    // Jeżeli wszystkie 16 bitów zostały przesłane, resetujemy bitIndex
-    if (bitIndex >= 16)
+    for (int8_t index = bytesToTransmit - 1; index >= 0; index--)
     {
-        bitIndex = 0; // Resetujemy indeks bitów
-        data = 0;     // Koniec danych do transmisji
-        bitToTransmit = BitState::NODATA;
+        uint8_t bit = ((data >> index) & 1);
+
+        transmitEncodedFirstBit(bit);
+        transmitEncodedSecondBit(bit);
     }
+
+    transmitBit(0);
 }
 
-void MsRf::transmitFirstBit()
+void MsRf::transmitBit(uint8_t bit)
 {
-    if (bitToTransmit == BitState::LOW)
+    if (bit == 0)
     {
-        // uart.print("1");
-
-        DATA_PORT |= (1 << DATA_PIN); // Gdy bit jest 0 najpierw pierwszy bit do góry
+        DATA_PORT &= ~(1 << DATA_PIN);
     }
     else
     {
-        // uart.print("0");
-
-        DATA_PORT &= ~(1 << DATA_PIN); // Gdy bit jest 1 najpierw pierwszy bit do dołu
+        DATA_PORT |= (1 << DATA_PIN);
     }
+
+    _delay_ms(1);
 }
 
-void MsRf::transmitSecondBit()
+void MsRf::transmitEncodedFirstBit(uint8_t bit)
 {
-    if (bitToTransmit == BitState::LOW)
+    if (bit == 0)
     {
-        // uart.print("0");
-
-        DATA_PORT &= ~(1 << DATA_PIN); // Gdy bit jest 0 drugi bit na dół
+        transmitBit(1);
     }
     else
     {
-        // uart.print("1");
-
-        DATA_PORT |= (1 << DATA_PIN); // Gdy bit jest 1 drugi bit do góry
+        transmitBit(0);
     }
 }
 
-void MsRf::onTimerInterrupt()
+void MsRf::transmitEncodedSecondBit(uint8_t bit)
 {
-
-    if (bitToTransmit != BitState::NODATA && !transmitting)
+    if (bit == 0)
     {
-        transmitFirstBit();
-        transmitting = true;
-        return;
+        transmitBit(0);
     }
-
-    if (bitToTransmit != BitState::NODATA && transmitting)
+    else
     {
-        transmitSecondBit();
-        setBitToSend(); // Pobierz kolejne bity Manchester
-
-        transmitting = false;
+        transmitBit(1);
     }
 }
