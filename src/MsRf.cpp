@@ -2,8 +2,9 @@
 
 MsUart uart(&DDRB, &PORTB, 4);
 
-MsRf::MsRf()
+MsRf::MsRf(char identifier)
 {
+    this->identifier = identifier;
 }
 
 void MsRf::init()
@@ -22,7 +23,7 @@ void MsRf::transmit(uint16_t data)
     // Sprawdzanie bitu na pozycji `bitIndex`
     uint8_t bytesToTransmit = 16;
 
-    // Wysylanie preambuly. Musi byc int8_t
+    // Wysylanie preambuly 8 bit (16 manchester). Musi byc int8_t
     for (int8_t index = 7; index >= 0; index--)
     {
         uint8_t bit = ((PREAMBLE >> index) & 1);
@@ -31,6 +32,16 @@ void MsRf::transmit(uint16_t data)
         transmitEncodedSecondBit(bit);
     }
 
+    // Wysyłanie identyfikatora 8 bitów (16 bitów manchester)
+    for (int8_t index = 7; index >= 0; index--)
+    {
+        uint8_t bit = ((identifier >> index) & 1);
+
+        transmitEncodedFirstBit(bit);
+        transmitEncodedSecondBit(bit);
+    }
+
+    // Wysyłanie danych 16 bitów (32 manchester)
     for (int8_t index = bytesToTransmit - 1; index >= 0; index--)
     {
         uint8_t bit = ((data >> index) & 1);

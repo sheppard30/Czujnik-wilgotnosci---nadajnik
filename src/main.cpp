@@ -8,7 +8,7 @@ int main()
     _delay_ms(10); // z tym delayem wysyla dane
 
     MsHuminitySensor sensor;
-    MsRf rf;
+    MsRf rf('A'); // B dla drugiego
 
     rf.init();
     sensor.init();
