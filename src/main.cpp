@@ -2,13 +2,12 @@
 #include <util/delay.h>
 #include <MsUart.h>
 #include "MsRf.h"
+#include "MsHuminitySensor.h"
 
 #define TX_PIN PB4
 #define ADC_PIN PB4
-#define RF_TX_PIN PB3
 
 MsRf rf;
-// MsUart uart(&DDRB, &PORTB, TX_PIN);
 
 ISR(TIM0_COMPA_vect)
 {
@@ -17,14 +16,12 @@ ISR(TIM0_COMPA_vect)
 
 int main()
 {
-    DDRB |= (1 << RF_TX_PIN);
+    rf.init();
+    rf.send(456);
 
-    // sensor_init();
-
+    // _delay_ms(10); // z tym delayem wysyla dane
     while (1)
     {
-        // uint8_t huminity = adc_read();
-        // uart_print("Test");
     }
 
     return 0;
