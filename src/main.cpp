@@ -17,11 +17,11 @@ ISR(TIM0_COMPA_vect)
 int main()
 {
     rf.init();
-    rf.send(456);
 
-    // _delay_ms(10); // z tym delayem wysyla dane
     while (1)
     {
+        rf.send(0b01110000);
+        _delay_ms(500);
     }
 
     return 0;

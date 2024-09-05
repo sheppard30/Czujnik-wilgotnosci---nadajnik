@@ -25,11 +25,11 @@ private:
     uint16_t data;
     uint8_t bitIndex;
     BitState bitToTransmit;
-    bool transmitting;
+    bool transmittingFirstHalf;
 
     void setBitToSend();
-    void transmitFirstBit();
-    void transmitSecondBit();
+    void transmitFirstHalf();
+    void transmitSecondHalf();
 
 public:
     MsRf();
