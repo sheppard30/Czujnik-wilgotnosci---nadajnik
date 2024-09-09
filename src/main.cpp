@@ -15,7 +15,7 @@ int main()
 
     while (1)
     {
-        uint8_t huminity = sensor.read();
+        uint16_t huminity = sensor.read();
         rf.send(huminity);
         _delay_ms(5000);
     }
